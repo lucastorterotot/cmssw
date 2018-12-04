@@ -8,15 +8,19 @@ import pandas as pd
 
 print('open input file...')
 
-events = Events('root://cms-xrd-global.cern.ch//store/mc/'+ \
-        'RunIIFall17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/'+ \
-        'MINIAODSIM/RECOSIMstep_94X_mc2017_realistic_v10-v1/00000/0293A280-B5F3-E711-8303-3417EBE33927.root')
+# events = Events('root://cms-xrd-global.cern.ch//store/mc/'+ \
+#         'RunIIFall17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/'+ \
+#         'MINIAODSIM/RECOSIMstep_94X_mc2017_realistic_v10-v1/00000/0293A280-B5F3-E711-8303-3417EBE33927.root')
+
+events = Events('root://lyogrid06.in2p3.fr//dpm/in2p3.fr/home/cms/data/store/mc/RunIIFall17MiniAODv2/VBFHToTauTau_M125_13TeV_powheg_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/00000/2EE992B1-F942-E811-8F11-0CC47A4C8E8A.root')
 
 # Get Handles on the electrons and other products needed to calculate the MVAs
 ele_handle  = Handle('std::vector<pat::Electron>')
 rho_handle  = Handle('double')
 conv_handle = Handle('reco::ConversionCollection')
 bs_handle   = Handle('reco::BeamSpot')
+
+gen_ptc_handle  = Handle('std::vector<reco::GenParticle>')
 
 n = 100000
 
@@ -44,6 +48,14 @@ data = {"Fall17IsoV2"         : np.zeros(n),
 print('start processing')
 
 accepted = 0
+
+def getFinalTau(tau):
+    for i_d in xrange(tau.numberOfDaughters()):
+        if not tau.daughter(i_d) : import pdb; pdb.set_trace() # to stop here if the error occurs
+        if tau.daughter(i_d).pdgId() == tau.pdgId():
+            return getFinalTau(tau.daughter(i_d))
+    return tau  
+
 for i,event in enumerate(events): 
 
     nEvent = event._event.id().event()
@@ -63,9 +75,20 @@ for i,event in enumerate(events):
     event.getByLabel(('reducedEgamma:reducedConversions'), conv_handle)
     event.getByLabel(('offlineBeamSpot'), bs_handle)
 
+    event.getByLabel(('prunedGenParticles'), gen_ptc_handle)
+
     convs     = conv_handle.product()
     beam_spot = bs_handle.product()
     rho       = rho_handle.product()
+
+    gen_ptcs = gen_ptc_handle.product()
+
+    gen_taus = [p for p in gen_ptcs if abs(p.pdgId()) == 15 and p.statusFlags().isPrompt() and not any(abs(getFinalTau(p).daughter(i_d).pdgId()) in [11, 13] for i_d in xrange(getFinalTau(p).numberOfDaughters()))]
+
+    for tau in gen_taus :
+        print 'tau pt = {}'.format(tau.pt())
+        print 'Mother Id : {}'.format(tau.mother().pdgId())
+        print ''
 
     ele = electrons[0]
     i = accepted
