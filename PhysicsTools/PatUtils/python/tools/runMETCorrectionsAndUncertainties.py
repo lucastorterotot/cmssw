@@ -324,6 +324,7 @@ class RunMETCorrectionsAndUncertainties(ConfigToolBase):
 
         # 2017 EE fix will modify pf cand and jet collections used downstream
         if fixEE2017:
+            # import pdb; pdb.set_trace()
             pfCandCollection, jetCollectionUnskimmed = self.runFixEE2017(process,
                 fixEE2017Params,
                 jetCollectionUnskimmed,
