@@ -65,6 +65,10 @@ namespace cms
     auto pfmetcoll = std::make_unique<reco::PFMETCollection>();
 
     pfmetcoll->push_back(pfmet);
+
+    std::cout.precision(13);
+    std::cout << "RAW MET " << pfmetcoll->back().p4().Px() << std::endl;
+
     event.put(std::move(pfmetcoll));
   }
 
