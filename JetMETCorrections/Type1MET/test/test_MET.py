@@ -42,11 +42,19 @@ process.load("JetMETCorrections.Type1MET.correctedMet_cff")
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 runMetCorAndUncFromMiniAOD (
         process,
-        isData = True, # false for MC
+        isData = False, # false for MC
         fixEE2017 = True,
         fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
         postfix = "ModifiedMET"
 )
+
+process.qqch = cms.EDProducer("PFMETProducer",
+    alias = cms.string('RAWpfMet'),
+    calculateSignificance = cms.bool(False),
+    globalThreshold = cms.double(0.0),
+    src = cms.InputTag("packedPFCandidates")
+)
+
 
 ##____________________________________________________________________________||
 # from JetMETCorrections.Type1MET.testInputFiles_cff import corrMETtestInputFiles
@@ -83,7 +91,7 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 ##____________________________________________________________________________||
 process.p = cms.Path(
-    process.fullPatMetSequenceModifiedMET 
+    process.fullPatMetSequenceModifiedMET + process.qqch
 #     process.correctionTermsPfMetType1Type2 +
 #     process.correctionTermsPfMetType0RecoTrack +
 #     process.correctionTermsPfMetType0PFCandidate +
