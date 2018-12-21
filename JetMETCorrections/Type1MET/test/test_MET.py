@@ -7,7 +7,7 @@ process = cms.Process("TEST")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 run_events_to_select = [
-    [1, [969113, 969111, 969119, 969123, 969147, 969151, 969159, 969168, 969258, 969280]]
+    [1, [969280]]
 ]
 
 def vevent_range(run_events):
@@ -27,7 +27,7 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 ##____________________________________________________________________________||
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v17', '')
 
 ##____________________________________________________________________________||
 process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType1Type2_cff")
