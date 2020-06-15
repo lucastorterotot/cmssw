@@ -19,6 +19,7 @@ generator = cms.EDFilter("Pythia8GeneratorFilter",
             '25:onMode = off',
             '25:onIfAny = 15',
             '25:m0 = 130'
+	    '25:mMin = 50.',
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
