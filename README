@@ -1,1 +1,25 @@
 Introduction to CMSSW: http://cms-sw.github.io
+
+
+How to produce nanoAOD events of H to Tau tau where Higgs has 130 GeV mass. 
+
+cmsrel CMSSW_10_2_22
+
+cd CMSSW_10_2_22/src
+
+git cms-addpkg Configuration/Generator
+
+< pull from my repo from this branch
+https://github.com/easilar/cmssw/blob/from-CMSSW_10_2_22 >
+
+scram b -j 8
+
+scram b python
+
+cmsDriver.py H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 200 --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
+
+cmsRun H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.py
+
+cmsDriver.py step3  --conditions auto:phase1_2017_realistic --fast  -n 200 --era Run2_2017_FastSim --eventcontent MINIAODSIM --runUnscheduled  --filein file:H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.root -s PAT --datatier MINIAODSIM --mc
+
+cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:HIG_Nano_1.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era Run2_2017_FastSim -n 200
