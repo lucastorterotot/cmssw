@@ -1,7 +1,7 @@
 Introduction to CMSSW: http://cms-sw.github.io
 
 
-How to produce nanoAOD
+How to produce nanoAOD events of H to Tau tau where Higgs has 130 GeV mass. 
 
 cmsrel CMSSW_10_2_22
 
