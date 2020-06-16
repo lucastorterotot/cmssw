@@ -7,10 +7,15 @@ cmsrel CMSSW_10_2_22
 
 cd CMSSW_10_2_22/src
 
+cmsenv
+
 git cms-addpkg Configuration/Generator
 
-< pull from my repo from this branch
-https://github.com/easilar/cmssw/blob/from-CMSSW_10_2_22 >
+# pull from my repo from the from-CMSSW_10_2_22 branch
+# https://github.com/easilar/cmssw/tree/from-CMSSW_10_2_22
+git remote add ece git@github.com:easilar/cmssw.git
+git fetch ece
+git co ece/from-CMSSW_10_2_22
 
 scram b -j 8
 
