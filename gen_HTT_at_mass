@@ -1,0 +1,40 @@
+#!/bin/bash
+
+Higgs_mass=125
+N_events=100000
+
+while getopts ":m:N:" opt
+do
+    case $opt in
+        m) Higgs_mass="$OPTARG"
+            ;;
+        N) N_events="$OPTARG"
+           ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+            ;;
+    esac
+done
+
+mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}
+cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}
+
+cp ${CMSSW_BASE}/src/Configuration/Generator/python/H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py
+
+sed -i "s|25:m0 = 130|25:m0 = ${Higgs_mass}|g" ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py
+
+cmsDriver.py tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
+rm ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py
+
+cmsRun tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.py
+rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.py
+
+cmsDriver.py step3  --conditions auto:phase1_2017_realistic --fast  -n ${N_events} --era Run2_2017_FastSim --eventcontent MINIAODSIM --runUnscheduled  --filein file:tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.root -s PAT --datatier MINIAODSIM --mc
+rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.root
+
+cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:Htt_${Higgs_mass}_NanoAODSIM.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era Run2_2017_FastSim -n ${N_events}
+rm step3_PAT.root
+
+mkdir -p /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}
+mv Htt_${Higgs_mass}_NanoAODSIM.root /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}/
+
+rm -rf /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}
