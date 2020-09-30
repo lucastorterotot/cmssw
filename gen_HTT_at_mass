@@ -1,0 +1,81 @@
+#!/bin/bash
+
+Higgs_mass=125
+N_events=100000
+PU_YEAR=0
+
+while getopts ":m:N:P:" opt
+do
+    case $opt in
+        m) Higgs_mass="$OPTARG"
+            ;;
+        N) N_events="$OPTARG"
+           ;;
+        P) PU_YEAR="$OPTARG"
+           ;;
+        \?) echo "Invalid option -$OPTARG" >&2
+            ;;
+    esac
+done
+
+if [[ ${PU_YEAR} == 0 ]]
+then
+    run=2016
+    era=$run
+    PU_suffix=""
+else
+    run=${PU_YEAR}
+    era=$run
+    PU_suffix="_PU"
+    if [[ ${PU_YEAR} == 2016 ]]
+    then
+        pileup_cfg=2016_25ns_Moriond17MC_PoissonOOTPU
+    elif [[ ${PU_YEAR} == 2017 ]]
+    then
+        era=${era}_FastSim
+        pileup_cfg=2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU
+    elif [[ ${PU_YEAR} == 2018 ]]
+    then
+        era=${era}_FastSim
+        pileup_cfg=2018_25ns_JuneProjectionFull18_PoissonOOTPU
+    fi
+
+    # generate PU file if needed
+    mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing
+    if [ ! -e /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root ]
+    then
+        echo "Generating PU mixing file..."
+        cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing
+        cmsDriver.py MinBias_13TeV_pythia8_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 10000 --era Run2_2016 --eventcontent FASTPU --relval 100000,1000 -s GEN,SIM,RECOBEFMIX --datatier GEN-SIM-RECO --beamspot Realistic50ns13TeVCollision
+    fi
+fi
+
+mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+
+cp ${CMSSW_BASE}/src/Configuration/Generator/python/H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
+
+sed -i "s|25:m0 = 130|25:m0 = ${Higgs_mass}|g" ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
+
+if [[ ${PU_YEAR} == 0 ]]
+then
+    cmsDriver.py tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
+else
+    cmsDriver.py tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM --pileup_input file:/gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root  --pileup ${pileup_cfg} --no_exec
+fi
+
+# rm ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
+
+cmsRun tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
+# rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
+
+cmsDriver.py step3  --conditions auto:phase1_2017_realistic --fast  -n ${N_events} --era Run2_${era} --eventcontent MINIAODSIM --runUnscheduled  --filein file:tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root -s PAT --datatier MINIAODSIM --mc
+# rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root
+
+cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:Htt_${Higgs_mass}_NanoAODSIM.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era Run2_${era} -n ${N_events}
+# rm step3_PAT.root
+
+# mkdir -p /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}
+# mv Htt_${Higgs_mass}_NanoAODSIM.root /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}/
+
+# rm -rf /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
