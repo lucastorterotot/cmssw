@@ -31,3 +31,9 @@ cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:HIG_Nano_1.root -
 
 If all run properly, you may use gen_HTT_at_mass with options -m to set the Higgs mass and -N for the amount of events:
 ${CMSSW_BASE}/src/gen_HTT_at_mass -m 130 -N 200
+
+# To submit to slurm cluster
+login machine : ssh -XY lyoui
+sbatch --partition=long --array=120-125 --output=submit_array.out submit_array.sh
+This will submit samples for 5 different masses from 120 GeV to 125 GeV
+
