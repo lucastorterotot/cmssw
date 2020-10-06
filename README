@@ -13,14 +13,25 @@ git cms-addpkg Configuration/Generator
 
 # pull from my repo from the from-CMSSW_10_2_22 branch
 # https://github.com/easilar/cmssw/tree/from-CMSSW_10_2_22
+# and add also Lucas' repo
 git remote add ece git@github.com:easilar/cmssw.git
 git fetch ece
+git remote add lucas git@github.com:lucastorterotot/cmssw.git
+git fetch lucas
+
+# make sure scripts will be copied locally with git
+for str in gen_* prod_*sh submit*sh ; do echo ./$str >> .git/info/sparse-checkout ; done
+
 git checkout -b localmaster ece/from-CMSSW_10_2_22
 
 scram b -j 8
 
 scram b python
 
+# If you want to generate event with PU, create MinBias events with
+${CMSSW_BASE}/src/gen_PU_for_HTT
+
+# Try to generate events:
 cmsDriver.py H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 200 --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
 
 cmsRun H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO.py
@@ -37,7 +48,7 @@ ${CMSSW_BASE}/src/gen_HTT_at_mass -m 130 -N 200
 cd ${CMSSW_BASE}/src/Configuration/Generator/python/
 #Example masses between 500 GeV to 600 GeV:
 for i in {500..600}; do sed 's/25:m0 = 125/25:m0 = '"$i"'/g' H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py > H"$i"GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py; done
-
+# make sure you do not erase the 125 GeV config file! Git can help you to recover it, if needed.
 
 # To submit to slurm cluster
 login machine : ssh -XY lyoui
@@ -46,9 +57,9 @@ sbatch --partition=long --array=120-125 --output=submit_array.out submit_array.s
 This will submit samples for 5 different masses from 120 GeV to 125 GeV
 #Single job
 mkdir /home/cms/"$USER"/slurmJobs/
-sbatch submit_single.sh 90 60000  # this comment will submit a job for mass = 90 GeV for 60k events
+sbatch submit_single.sh 90 60000 0  # this comment will submit a job for mass = 90 GeV for 60k events and no PU
 #Multiple jobs each seperate jobs:
-#the comment below will submit a job for the masses between 90 to 100 (in bins of 1 GeV) for 60 k events. Each job will have a seperate job id
+#the comment below will submit a job for the masses between 90 to 100 (in bins of 1 GeV) for 60 k events and 2017 PU profile. Each job will have a seperate job id
 mkdir /home/cms/"$USER"/slurmJobs/
-for i in {90..100}; do sbatch submit_single.sh i 60000 ; done
+for i in {90..100}; do sbatch submit_single.sh i 60000 2017 ; done
 
