@@ -1,8 +1,8 @@
 #!/bin/bash
 #submit_single.sh
 #
-#SBATCH --job-name=NP_"$mass"
-#SBATCH --output=/home/cms/${USER}/slurmJobs/submitted_"$mass"
+#SBATCH --job-name=NP_"$mass"_PU"$PU_YEAR"
+#SBATCH --output=/home/cms/${USER}/slurmJobs/submitted_"$mass"_PU"$PU_YEAR"
 #
 # mail-type=BEGIN, END, FAIL, REQUEUE, ALL, STAGE_OUT, TIME_LIMIT_90
 #SBATCH --mail-type=ALL
@@ -51,9 +51,9 @@ if [ $? == 0 ]; then
 fi
 
 
-sh prod_aod.sh  $mass $nevents
-sh prod_mini.sh $mass $nevents
-sh prod_nano.sh $mass $nevents
+sh prod_aod.sh  $mass $nevents $PU_YEAR
+sh prod_mini.sh $mass $nevents $PU_YEAR
+sh prod_nano.sh $mass $nevents $PU_YEAR
 
 lscpu
 

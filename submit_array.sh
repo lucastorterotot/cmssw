@@ -50,9 +50,9 @@ if [ $? == 0 ]; then
 fi
 
 
-sh prod_aod.sh $SLURM_ARRAY_TASK_ID 10000
-sh prod_mini.sh $SLURM_ARRAY_TASK_ID 10000
-sh prod_nano.sh $SLURM_ARRAY_TASK_ID 10000
+sh prod_aod.sh $SLURM_ARRAY_TASK_ID 10000 2017
+sh prod_mini.sh $SLURM_ARRAY_TASK_ID 10000 2017
+sh prod_nano.sh $SLURM_ARRAY_TASK_ID 10000 2017
 
 lscpu
 
