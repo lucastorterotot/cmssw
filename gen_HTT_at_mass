@@ -53,24 +53,26 @@ fi
 mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
 cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
 
-cp ${CMSSW_BASE}/src/Configuration/Generator/python/H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
-
-sed -i "s|25:m0 = 130|25:m0 = ${Higgs_mass}|g" ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
+# if not already here, create the appropriate config file
+if [ ! -e ${CMSSW_BASE}/src/Configuration/Generator/python/H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py ]
+then
+    sed 's/25:m0 = 125/25:m0 = '${Higgs_mass}'/g' ${CMSSW_BASE}/src/Configuration/Generator/python/H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py > ${CMSSW_BASE}/src/Configuration/Generator/python/H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py
+fi
 
 if [[ ${PU_YEAR} == 0 ]]
 then
-    cmsDriver.py tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
+    cmsDriver.py H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
 else
-    cmsDriver.py tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM --pileup_input file:/gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root  --pileup ${pileup_cfg} --no_exec
+    cmsDriver.py H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM --pileup_input file:/gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root  --pileup ${pileup_cfg} --no_exec
 fi
 
-# rm ${CMSSW_BASE}/src/Configuration/Generator/python/tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi.py
+# rm ${CMSSW_BASE}/src/Configuration/Generator/python/H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py
 
-cmsRun tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
-# rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
+cmsRun H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
+# rm H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.py
 
-cmsDriver.py step3  --conditions auto:phase1_2017_realistic --fast  -n ${N_events} --era Run2_${era} --eventcontent MINIAODSIM --runUnscheduled  --filein file:tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root -s PAT --datatier MINIAODSIM --mc
-# rm tmp_H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_${run}${PU_suffix}_${N_events}cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root
+cmsDriver.py step3  --conditions auto:phase1_2017_realistic --fast  -n ${N_events} --era Run2_${era} --eventcontent MINIAODSIM --runUnscheduled  --filein file:H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root -s PAT --datatier MINIAODSIM --mc
+# rm H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX_DIGI_L1_DIGI2RAW_L1Reco_RECO${PU_suffix}.root
 
 cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:Htt_${Higgs_mass}_NanoAODSIM.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era Run2_${era} -n ${N_events}
 # rm step3_PAT.root
