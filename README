@@ -32,8 +32,23 @@ cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:HIG_Nano_1.root -
 If all run properly, you may use gen_HTT_at_mass with options -m to set the Higgs mass and -N for the amount of events:
 ${CMSSW_BASE}/src/gen_HTT_at_mass -m 130 -N 200
 
+#Before running the scripts below create, if you do not have the config files for the desired higgs mass do the following
+#You need to this step only onces
+cd ${CMSSW_BASE}/src/Configuration/Generator/python/
+#Example masses between 500 GeV to 600 GeV:
+for i in {500..600}; do sed 's/25:m0 = 125/25:m0 = '"$i"'/g' H125GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py > H"$i"GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py; done
+
+
 # To submit to slurm cluster
 login machine : ssh -XY lyoui
+#Multiple jobs at a time
 sbatch --partition=long --array=120-125 --output=submit_array.out submit_array.sh
 This will submit samples for 5 different masses from 120 GeV to 125 GeV
+#Single job
+mkdir /home/cms/"$USER"/slurmJobs/
+sbatch submit_single.sh 90 60000  # this comment will submit a job for mass = 90 GeV for 60k events
+#Multiple jobs each seperate jobs:
+#the comment below will submit a job for the masses between 90 to 100 (in bins of 1 GeV) for 60 k events. Each job will have a seperate job id
+mkdir /home/cms/"$USER"/slurmJobs/
+for i in {90..100}; do sbatch submit_single.sh i 60000 ; done
 
