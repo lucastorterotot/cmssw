@@ -15,6 +15,20 @@ cd /home/cms/${USER}/prod_nano/CMSSW_10_2_22/src;
 pwd
 cmsenv
 
-cmsDriver.py step3 --python_filename Step_MiniAOD_cfg_"$Higgs_mass"_PU"$PU_YEAR"_.py --conditions auto:phase1_2017_realistic --fast  -n "$nEvents" --era Run2_2017_FastSim --eventcontent MINIAODSIM --runUnscheduled  --filein file:/gridgroup/cms/htt/shared_files/Data/AODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_AODSIM.root --fileout file:/gridgroup/cms/htt/shared_files/Data/MiniAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_MiniAODSIM.root -s PAT --datatier MINIAODSIM --mc
+if [[ ${PU_YEAR} == 0 ]]
+then
+    era=Run2_2017_FastSim
+elif [[ ${PU_YEAR} == 2016 ]]
+then
+    era=Run2_2016
+elif [[ ${PU_YEAR} == 2017 ]]
+then
+    era=Run2_2017_FastSim
+elif [[ ${PU_YEAR} == 2018 ]]
+then
+    era=Run2_2018_FastSim
+fi
+
+cmsDriver.py step3 --python_filename Step_MiniAOD_cfg_"$Higgs_mass"_PU"$PU_YEAR"_.py --conditions auto:phase1_2017_realistic --fast  -n "$nEvents" --era "$era" --eventcontent MINIAODSIM --runUnscheduled  --filein file:/gridgroup/cms/htt/shared_files/Data/AODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_AODSIM.root --fileout file:/gridgroup/cms/htt/shared_files/Data/MiniAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_MiniAODSIM.root -s PAT --datatier MINIAODSIM --mc
 
 

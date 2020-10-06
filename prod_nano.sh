@@ -15,5 +15,19 @@ cd /home/cms/${USER}/prod_nano/CMSSW_10_2_22/src;
 pwd
 cmsenv
 
-cmsDriver.py step1 --python_filename Step_NanoAOD_cfg_"$Higgs_mass"_PU"$PU_YEAR"_.py --filein file:/gridgroup/cms/htt/shared_files/Data/MiniAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_MiniAODSIM.root --fileout file:/gridgroup/cms/htt/shared_files/Data/NanoAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_NanoAODSIM.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era Run2_2017_FastSim -n "$nEvents"
+if [[ ${PU_YEAR} == 0 ]]
+then
+    era=Run2_2017_FastSim
+elif [[ ${PU_YEAR} == 2016 ]]
+then
+    era=Run2_2016
+elif [[ ${PU_YEAR} == 2017 ]]
+then
+    era=Run2_2017_FastSim
+elif [[ ${PU_YEAR} == 2018 ]]
+then
+    era=Run2_2018_FastSim
+fi
+
+cmsDriver.py step1 --python_filename Step_NanoAOD_cfg_"$Higgs_mass"_PU"$PU_YEAR"_.py --filein file:/gridgroup/cms/htt/shared_files/Data/MiniAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_MiniAODSIM.root --fileout file:/gridgroup/cms/htt/shared_files/Data/NanoAODSIM/Htt_"$Higgs_mass"_PU"$PU_YEAR"_NanoAODSIM.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:phase1_2017_realistic --step NANO --fast --era "$era" -n "$nEvents"
 
