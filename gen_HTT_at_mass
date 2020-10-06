@@ -41,13 +41,7 @@ else
     fi
 
     # generate PU file if needed
-    mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing
-    if [ ! -e /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root ]
-    then
-        echo "Generating PU mixing file..."
-        cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing
-        cmsDriver.py MinBias_13TeV_pythia8_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 10000 --era Run2_2016 --eventcontent FASTPU --relval 100000,1000 -s GEN,SIM,RECOBEFMIX --datatier GEN-SIM-RECO --beamspot Realistic50ns13TeVCollision
-    fi
+    ${CMSSW_BASE}/src/gen_PU_for_HTT
 fi
 
 mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
@@ -63,7 +57,7 @@ if [[ ${PU_YEAR} == 0 ]]
 then
     cmsDriver.py H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM  --no_exec
 else
-    cmsDriver.py H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM --pileup_input file:/gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root  --pileup ${pileup_cfg} --no_exec
+    cmsDriver.py H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n ${N_events} --era Run2_2016 --eventcontent AODSIM --relval 100000,500 --step GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO --beamspot Realistic50ns13TeVCollision --datatier AODSIM --pileup_input file:/gridgroup/cms/htt/shared_files/Data/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root  --pileup ${pileup_cfg} --no_exec
 fi
 
 # rm ${CMSSW_BASE}/src/Configuration/Generator/python/H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py

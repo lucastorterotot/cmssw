@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# generate PU file if needed
+mkdir -p /gridgroup/cms/htt/shared_files/Data/PU_mixing
+if [ ! -e /gridgroup/cms/htt/shared_files/Data/PU_mixing/MinBias_13TeV_pythia8_TuneCUETP8M1_cfi_GEN_SIM_RECOBEFMIX.root ]
+then
+    echo "Generating PU mixing file..."
+    cd /gridgroup/cms/htt/shared_files/Data/PU_mixing
+    cmsDriver.py MinBias_13TeV_pythia8_TuneCUETP8M1_cfi --conditions auto:run2_mc --fast -n 10000 --era Run2_2016 --eventcontent FASTPU --relval 100000,1000 -s GEN,SIM,RECOBEFMIX --datatier GEN-SIM-RECO --beamspot Realistic50ns13TeVCollision
+fi
