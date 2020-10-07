@@ -2,11 +2,11 @@
 #submit_single.sh
 #
 #SBATCH --job-name=NP_"$mass"_PU"$PU_YEAR"
-#SBATCH --output=/home/cms/${USER}/slurmJobs/submitted_"$mass"_PU"$PU_YEAR"
+#SBATCH --output=/home/cms/torterotot/slurmJobs/submitted_"$mass"_PU"$PU_YEAR"
 #
 # mail-type=BEGIN, END, FAIL, REQUEUE, ALL, STAGE_OUT, TIME_LIMIT_90
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=${USER}@ipnl.in2p3.fr
+#SBATCH --mail-user=l.torterotot@ipnl.in2p3.fr
 
 echo
 echo
