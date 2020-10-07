@@ -61,5 +61,10 @@ sbatch submit_single.sh 90 60000 0  # this comment will submit a job for mass = 
 #Multiple jobs each seperate jobs:
 #the comment below will submit a job for the masses between 90 to 100 (in bins of 1 GeV) for 60 k events and 2017 PU profile. Each job will have a seperate job id
 mkdir /home/cms/"$USER"/slurmJobs/
-for i in {90..100}; do sbatch submit_single.sh i 60000 2017 ; done
+for i in {90..100}; do sbatch submit_single.sh $i 60000 2017 ; done
+
+# A dedicated script setting explicit jobs names is available: submit_HTT_at_mass.sh
+# Use it to produce 200 events at 750 GeV :
+./submit_HTT_at_mass.sh -m 750 -N 200
+# you can provide only the mass only of the Higgs and the amount of events will be automatically set.
 
