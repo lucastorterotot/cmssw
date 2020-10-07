@@ -18,7 +18,7 @@ generator = cms.EDFilter("Pythia8GeneratorFilter",
             'HiggsSM:gg2H = on',
             '25:onMode = off',
             '25:onIfAny = 15',
-            '25:m0 = 758'
+            '25:m0 = 758',
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
