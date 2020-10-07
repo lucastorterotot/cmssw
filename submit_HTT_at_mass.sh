@@ -47,4 +47,4 @@ then
     fi
 fi
 
-echo sbatch --job-name=HTT_gen_${Higgs_mass}GeV_PU${PU_YEAR} --output=/home/cms/${USER}/slurmJobs/submitted_${Higgs_mass}_PU${PU_YEAR} --partition=${partition} --mail-type=ALL --mail-user=${USER}@ipnl.in2p3.fr submit_single.sh ${Higgs_mass} ${N_events} ${PU_YEAR}
+sbatch --job-name=HTT_gen_${Higgs_mass}GeV_PU${PU_YEAR} --output=/home/cms/${USER}/slurmJobs/submitted_${Higgs_mass}_PU${PU_YEAR} --partition=${partition} --mail-type=ALL --mail-user=${USER}@ipnl.in2p3.fr submit_single.sh ${Higgs_mass} ${N_events} ${PU_YEAR}
