@@ -50,6 +50,9 @@ if [ $? == 0 ]; then
   fi
 fi
 
+mass=$1
+nevents=$2
+PU_YEAR=$3
 
 sh prod_aod.sh  $mass $nevents $PU_YEAR
 sh prod_mini.sh $mass $nevents $PU_YEAR
