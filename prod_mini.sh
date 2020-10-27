@@ -11,7 +11,7 @@ echo "PU: $PU_YEAR"
 export SCRAM_ARCH=slc7_amd64_gcc820;
 echo $VO_CMS_SW_DIR;
 source $VO_CMS_SW_DIR/cmsset_default.sh;
-cd /home/cms/torterotot/prod_nano/CMSSW_10_2_22/src;
+cd /home/cms/${USER}/prod_nano/CMSSW_10_2_22/src;
 pwd
 cmsenv
 
