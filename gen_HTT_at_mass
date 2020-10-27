@@ -74,4 +74,4 @@ cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:Htt_${Higgs_mass}
 # mkdir -p /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}
 # mv Htt_${Higgs_mass}_NanoAODSIM.root /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}/
 
-# rm -rf /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+# rm -rf /gridgroup/cms/${USER}/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
