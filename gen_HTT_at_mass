@@ -44,8 +44,8 @@ else
     ${CMSSW_BASE}/src/gen_PU_for_HTT
 fi
 
-mkdir -p /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
-cd /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+mkdir -p /gridgroup/cms/${USER}/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+cd /gridgroup/cms/${USER}/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
 
 # if not already here, create the appropriate config file
 if [ ! -e ${CMSSW_BASE}/src/Configuration/Generator/python/H${Higgs_mass}GGgluonfusion_13TeV_TuneCUETP8M1_cfi.py ]
@@ -74,4 +74,4 @@ cmsDriver.py step1 --filein file:step3_PAT.root --fileout file:Htt_${Higgs_mass}
 # mkdir -p /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}
 # mv Htt_${Higgs_mass}_NanoAODSIM.root /gridgroup/cms/htt/shared_files/Data/NanoAODSIM/nevents_${N_events}_PU${PU_YEAR}/
 
-# rm -rf /gridgroup/cms/torterotot/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
+# rm -rf /gridgroup/cms/${USER}/FastSim_HTT_generator_tmp_area/HTT_${Higgs_mass}_FastSim_N${N_events}_PU${PU_YEAR}
